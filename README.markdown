@@ -123,6 +123,7 @@ sudo make install
 
 # build the i2c sample code so you can get individual registers
 # (required to get any registers large than 0x06)
+# a pre-compiled version has been provided in `bin/`
 gcc -o bin/i2c-clang-example i2c-clang-example.c -l bcm2835
 
 #run it
