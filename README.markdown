@@ -96,3 +96,49 @@ i2cdetect -y 1
 [Accelerometer Datasheet](http://www.freescale.com/files/sensors/doc/data_sheet/MMA8452Q.pdf)
 
 
+## Installing NodeJs (with NVM)
+```bash
+sudo apt-get install build-essential
+sudo apt-get install libssl-dev
+sudo apt-get npm
+curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+# close and re-open terminals
+nvm ls-remote
+nvm install <a recent one from ls-remote>
+sodu npm install -g coffee-script  # optional, but these the code here is coffeescript
+```
+
+## Broken Stuff
+http://www.airspayce.com/mikem/bcm2835/index.html
+```
+# make/install the bcm2835 library
+cd ~/
+wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.33.tar.gz
+tar zxvf bcm2835-1.33.tar.gz
+cd bcm2835-1.33
+./configure
+make
+sudo make check
+sudo make install
+
+# build the i2c sample code so you can get individual registers
+# (required to get any registers large than 0x06)
+gcc -o bin/i2c-clang-example i2c-clang-example.c -l bcm2835
+
+#run it
+bin/i2c-clang-example -dp -s29 -r13 1  # read the WHOAMI register
+
+# Running ...
+# Clock divider set to: 148
+# len set to: 1
+# Slave address set to: 29
+# Read Partial: d
+# Read Result = 0
+#
+# Read Buf[0] = 2a
+# ... done!
+
+# the expected 0x2A is output!
+```
+
+When reading sequential registers from the accelerometer, you need to check the datasheet to see what the "auto-increment address" is for your given register.  For example the AIR for 0x06 (`OUT_Z_LSB`) is 0x00.  This means that if you try to read squentiall 0x05 to 0x08, you'll actually get 0x05, 0x06, 0x00, 0x01.
