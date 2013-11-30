@@ -143,3 +143,10 @@ bin/i2c-clang-example -dp -s29 -r13 1  # read the WHOAMI register
 ```
 
 When reading sequential registers from the accelerometer, you need to check the datasheet to see what the "auto-increment address" is for your given register.  For example the AIR for 0x06 (`OUT_Z_LSB`) is 0x00.  This means that if you try to read squentiall 0x05 to 0x08, you'll actually get 0x05, 0x06, 0x00, 0x01.
+
+
+## Putting the accelerometer into active mode:
+```
+sudo ./bin/i2c-clang-example -dw -s29 2 0x2A 0x01
+```
+`0x2A` stores the active state (along with a few other things).  We need to set bit 0 to 1 to active the accelerometers.  Write commands are issued as address, value pairs (`0x2A 0x01` in this case).  *Now when we read from registers 1~6 their values actually change!*
