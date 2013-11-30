@@ -3,6 +3,7 @@
 *   i2c.c
 *
 *   Copyright (c) 2013 Shahrooz Shahparnia (sshahrooz@gmail.com)
+*   partial read added by Mark Lorenz (markjlorenz@dapplebeforedawn.com)
 *
 *   Description:
 *   i2c is a command-line utility for executing i2c commands with the
@@ -180,7 +181,7 @@ int showusage(int errcode) {
     printf("\n");
     printf("  The following are the options, which must be a single letter\n");
     printf("    preceded by a '-' and followed by another character.\n");
-    printf("    -dx where x is 'w' for write and 'r' is for read.\n");
+    printf("    -dx where x is 'w' for write and 'r' is for read and 'p' is for read-partial.\n");
     printf("    -ix where x is the I2C init option, b[egin] or e[nd]\n");
     printf("      The begin option must be executed before any transfer can happen.\n");
     printf("        It may be included with a transfer.\n");
@@ -189,6 +190,7 @@ int showusage(int errcode) {
     printf("    -cx where x is the clock divider from 250MHz. Allowed values\n");
     printf("      are 150 through 2500.\n");
     printf("      Corresponding frequencies are specified in bcm2835.h.\n");
+    printf("    -rx where x is the starting register to read from.  This option only works in combination with `-dp`.\n");
     printf("\n");
     printf("    len: The number of bytes to be transmitted or received.\n");
     printf("    The maximum number of bytes allowed is %d\n", MAX_LEN);
