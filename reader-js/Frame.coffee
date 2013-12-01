@@ -8,6 +8,12 @@ class Frame
     @positionDelta = calcPositionDelta.call(@)
     @position      = calcPosition.call(@)
 
+  # output in mm
+  toTableRow: ()->
+    to_mm = (coord)-> (@position[coord] * 1000)
+    in_mm = applyXYZ.call @, to_mm
+    "#{in_mm[0]}, #{in_mm[1]}, #{in_mm[2]}"
+
   calcAccel = ->
     times9_8 = (val)-> (val * 9.801)
     @gAccel.map times9_8, @

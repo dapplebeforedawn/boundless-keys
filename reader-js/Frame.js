@@ -16,6 +16,15 @@
       this.position = calcPosition.call(this);
     }
 
+    Frame.prototype.toTableRow = function() {
+      var in_mm, to_mm;
+      to_mm = function(coord) {
+        return this.position[coord] * 1000;
+      };
+      in_mm = applyXYZ.call(this, to_mm);
+      return "" + in_mm[0] + ", " + in_mm[1] + ", " + in_mm[2];
+    };
+
     calcAccel = function() {
       var times9_8;
       times9_8 = function(val) {

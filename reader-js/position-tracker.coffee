@@ -31,6 +31,7 @@ afterInit = ()->
 
         newFrame = new Frame(lastFrame, initFrame.tare(values))
 
+        console.log newFrame.toTableRow()
         setTimeout step(newFrame), 50
 
   step(initFrame)()

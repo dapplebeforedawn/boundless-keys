@@ -43,8 +43,8 @@
             return console.log(err);
           }
           newFrame = new Frame(lastFrame, initFrame.tare(values));
-          console.log("I'm at: ", newFrame.position);
-          return setTimeout(step(newFrame), 500);
+          console.log(newFrame.toTableRow());
+          return setTimeout(step(newFrame), 50);
         });
       };
     };
