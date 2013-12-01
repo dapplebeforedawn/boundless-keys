@@ -63,7 +63,7 @@ The Raspberry PI and Ribbon Cable
     |.............|
 ```
 
-Connecting the Accelerometer to the Ribbon Cable
+## Connecting the Accelerometer to the Ribbon Cable
 ```
      (MMA8452 Breakout Board)
           __________
@@ -94,6 +94,7 @@ i2cdetect -y 1
 # Now we see that the accelerometer is at address 0x1D.
 ```
 [Accelerometer Datasheet](http://www.freescale.com/files/sensors/doc/data_sheet/MMA8452Q.pdf)
+[Accelerometer Application Notes](http://www.artekit.eu/resources/ak-mma8452/doc/AN4076.pdf)
 
 
 ## Installing NodeJs (with NVM)
@@ -108,8 +109,8 @@ nvm install <a recent one from ls-remote>
 sodu npm install -g coffee-script  # optional, but these the code here is coffeescript
 ```
 
-## Broken Stuff
-http://www.airspayce.com/mikem/bcm2835/index.html
+## Dealing with repeated starts and the BCM2835 GPIO chip
+[BCM2835 clang library](http://www.airspayce.com/mikem/bcm2835/index.html) is used to read higher order registers on the MMA8452Q, and to write the needed setup registers
 ```
 # make/install the bcm2835 library
 cd ~/
@@ -142,11 +143,25 @@ bin/i2c-clang-example -dp -s29 -r13 1  # read the WHOAMI register
 # the expected 0x2A is output!
 ```
 
-When reading sequential registers from the accelerometer, you need to check the datasheet to see what the "auto-increment address" is for your given register.  For example the AIR for 0x06 (`OUT_Z_LSB`) is 0x00.  This means that if you try to read squentiall 0x05 to 0x08, you'll actually get 0x05, 0x06, 0x00, 0x01.
+When reading sequential registers from the accelerometer, you need to check the datasheet to see what the "auto-increment address" is for your given register.  For example the AIR for 0x06 (`OUT_Z_LSB`) is 0x00.  This means that if you try to read squentiall 0x05 to 0x08, you'll actually get 0x05, 0x06, 0x00, 0x01. (ed. That may not be right.  It may be that you can't read more than eight consecutive registers becuase of repeated start.)
 
 
 ## Putting the accelerometer into active mode:
 ```
 sudo ./bin/i2c-clang-example -dw -s29 2 0x2A 0x01
 ```
-`0x2A` stores the active state (along with a few other things).  We need to set bit 0 to 1 to active the accelerometers.  Write commands are issued as address, value pairs (`0x2A 0x01` in this case).  *Now when we read from registers 1~6 their values actually change!*
+0x2A` stores the active state (along with a few other things).  We need to set bit 0 to 1 to active the accelerometers.  Write commands are issued as address, value pairs (`0x2A 0x01` in this case).  *Now when we read from registers 1~6 their values actually change!*
+
+## Turning bits into engineering units
+```bash
+cd reader-js
+coffee -c reader.coffee ; node reader
+
+# [  -0.05862237420615535 ,  0.04592085979482169 ,  0.9770395701025891  ] -  0.9798732722490773
+# [  -0.061553492916463115 ,  0.0537371763556424 ,  0.9789936492427943  ] -  0.9823976190273559
+# [  -0.05959941377625794 ,  0.04787493893502687 ,  0.970200293111871  ] -  0.9732074335180894
+# [  -0.0625305324865657 ,  0.051783097215437224 ,  0.981924767953102  ] -  0.9852754978025334
+
+# x, y, z and the pythagorean distance.
+```
+The included `reader-js.coffee` file reads the accelerometer data into a buffer of bytes.  The MMA8452Q uses 12 bit values for acceleration, but node works in byte sized units (har, har ;-).  Since the accelerometer puts the always-zero four bits in the right most word of the LSB, if we read the two bytes as a 16bit number it will be 10 times too large.  To account for this `reader-js.coffee` shifts the 16bit buffer by 4 bits, dropping the zeros off the LSB side and pushing them on to the MSB side.  Javascripts `>>` bitwise operator respects the sign bit.

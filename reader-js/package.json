@@ -1,0 +1,14 @@
+{
+  "name": "reader-js",
+  "version": "0.0.1",
+  "author": "Mark Lorenz <markjlorenz@dapplebeforedawn.com>",
+  "description": "reading accelerometer data from the raspberry PI i2c bus",
+  "main": "./lib/reader",
+  "dependencies" : {
+    "i2c"   :  "*"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.11"
+  }
+}
