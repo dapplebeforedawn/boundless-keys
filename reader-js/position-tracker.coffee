@@ -1,3 +1,5 @@
+Frame         = require "./Frame"
+InitialFrame  = require "./InitialFrame"
 MMA8452Q      = require "./MMA8452Q"
 accelerometer = new MMA8452Q
 previousValue = [0, 0, 0, 0]
@@ -18,7 +20,20 @@ initPrevious = (times, afterInit)->
     initPrevious(times - 1, afterInit)
 
 afterInit = ()->
-  console.log previousValue
+  console.log "Starting With: ", previousValue
+
+  initFrame = new InitialFrame(previousValue)
+
+  step = (lastFrame)->
+    ()->
+      accelerometer.read (err, values)->
+        return console.log(err) if err
+
+        newFrame = new Frame(lastFrame, initFrame.tare(values))
+
+        setTimeout step(newFrame), 50
+
+  step(initFrame)()
 
 initPrevious(nTimes, afterInit)
 
