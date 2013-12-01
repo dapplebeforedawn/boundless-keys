@@ -150,7 +150,7 @@ When reading sequential registers from the accelerometer, you need to check the 
 ```
 sudo ./bin/i2c-clang-example -dw -s29 2 0x2A 0x01
 ```
-0x2A` stores the active state (along with a few other things).  We need to set bit 0 to 1 to active the accelerometers.  Write commands are issued as address, value pairs (`0x2A 0x01` in this case).  *Now when we read from registers 1~6 their values actually change!*
+`0x2A` stores the active state (along with a few other things).  We need to set bit 0 to 1 to active the accelerometers.  Write commands are issued as address, value pairs (`0x2A 0x01` in this case).  *Now when we read from registers 1~6 their values actually change!*
 
 ## Turning bits into engineering units
 ```bash
