@@ -155,7 +155,7 @@ sudo ./bin/i2c-clang-example -dw -s29 2 0x2A 0x01
 ## Turning bits into engineering units
 ```bash
 cd reader-js
-coffee -c reader.coffee ; node reader
+coffee -c *.coffee ; node simple-logger
 
 # [  -0.05862237420615535 ,  0.04592085979482169 ,  0.9770395701025891  ] -  0.9798732722490773
 # [  -0.061553492916463115 ,  0.0537371763556424 ,  0.9789936492427943  ] -  0.9823976190273559
@@ -164,4 +164,4 @@ coffee -c reader.coffee ; node reader
 
 # x, y, z and the pythagorean distance.
 ```
-The included `reader-js.coffee` file reads the accelerometer data into a buffer of bytes.  The MMA8452Q uses 12 bit values for acceleration, but node works in byte sized units (har, har ;-).  Since the accelerometer puts the always-zero four bits in the right most word of the LSB, if we read the two bytes as a 16bit number it will be 10 times too large.  To account for this `reader-js.coffee` shifts the 16bit buffer by 4 bits, dropping the zeros off the LSB side and pushing them on to the MSB side.  Javascripts `>>` bitwise operator respects the sign bit.
+The included `simple-logger.coffee` file reads the accelerometer data into a buffer of bytes.  The MMA8452Q uses 12 bit values for acceleration, but node works in byte sized units (har, har ;-).  Since the accelerometer puts the always-zero four bits in the right most word of the LSB, if we read the two bytes as a 16 bit number it will be 10 times too large.  To account for this `simple-logger.coffee` shifts the 16 bit buffer by 4 bits, dropping the zeros off the LSB side and pushing them on to the MSB side.  Javascript's `>>` bitwise operator respects the sign bit.

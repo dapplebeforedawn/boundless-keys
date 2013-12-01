@@ -45,6 +45,6 @@ class MMA8452Q
       # console.log xBuffRaw, yBuffRaw, zBuffRaw
       # console.log xBuff, yBuff, zBuff
       # console.log [realX, realY, realZ]
-      callback err, [realX, realY, realZ]
+      callback err, [realX, realY, realZ, Date.now()]
 
 module.exports = MMA8452Q

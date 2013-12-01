@@ -52,7 +52,7 @@
         realX = buffToEng(xBuff);
         realY = buffToEng(yBuff);
         realZ = buffToEng(zBuff);
-        return callback(err, [realX, realY, realZ]);
+        return callback(err, [realX, realY, realZ, Date.now()]);
       });
     };
 
