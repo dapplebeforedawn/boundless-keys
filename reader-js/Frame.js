@@ -27,10 +27,10 @@
 
     calcAccel = function() {
       var times9_8;
-      times9_8 = function(val) {
-        return val * 9.801;
+      times9_8 = function(coord) {
+        return this.gAccel[coord] * 9.801;
       };
-      return this.gAccel.map(times9_8, this);
+      return applyXYZ.call(this, times9_8);
     };
 
     calcTimeDelta = function() {
@@ -40,7 +40,7 @@
     calcEndVelocity = function() {
       var velocity;
       velocity = function(coord) {
-        return this.accel[coord] * this.timeDelta;
+        return this.lastFrame.endVelocity[coord] + this.accel[coord] * this.timeDelta;
       };
       return applyXYZ.call(this, velocity);
     };

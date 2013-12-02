@@ -15,15 +15,15 @@ class Frame
     "#{in_mm[0]}, #{in_mm[1]}, #{in_mm[2]}"
 
   calcAccel = ->
-    times9_8 = (val)-> (val * 9.801)
-    @gAccel.map times9_8, @
+    times9_8 = (coord)-> (@gAccel[coord] * 9.801)
+    applyXYZ.call @, times9_8
 
   calcTimeDelta = ->
     (@timestamp - @lastFrame.timestamp) / 1000
 
   calcEndVelocity = ->
     velocity = (coord)->
-      @accel[coord] * @timeDelta
+      @lastFrame.endVelocity[coord] + @accel[coord] * @timeDelta
     applyXYZ.call @, velocity
 
   # d_x(t) = v(0)*t + 1/2*a*t^2
