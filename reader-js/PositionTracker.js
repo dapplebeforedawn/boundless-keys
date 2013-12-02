@@ -66,7 +66,7 @@
           return this.accelerometer.read(readResult.bind(this));
         };
       };
-      return step(this.initialFrame)();
+      return step(this.initialFrame).bind(this)();
     };
 
     PositionTracker.prototype.start = function() {
