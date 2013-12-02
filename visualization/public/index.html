@@ -1,0 +1,29 @@
+<style type="text/css">
+  td { width: 185px; }
+</style>
+
+<canvas id="canvas"></canvas>
+<table class="table table-striped">
+  <tr>
+    <th>x</th>
+    <th>y</th>
+    <th>z</th>
+  </tr>
+  <tr>
+    <td id="x-val"></td>
+    <td id="y-val"></td>
+    <td id="z-val"></td>
+  </tr>
+</table>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  Accelerometer = { position: [] }
+  var socket = io.connect();
+  socket.on("update", function (data) {
+    Accelerometer.position = data
+  });
+</script>
+
+<script src="/processing-1.4.1.min.js"></script>
+<script src="/sketch.js"></script>
