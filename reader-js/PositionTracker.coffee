@@ -5,44 +5,45 @@ MMA8452Q        = require "./MMA8452Q"
 
 class PositionTracker extends EventEmitter
   constructor: (@speed)->
-    @speed or= 50
-    @initialFrame = nil
+    @speed       or= 50
+    @initialFrame  = null
+    @accelerometer = new MMA8452Q
 
-  # not proud of this, it was initially a do-one-thing experiment
-  # and got shoe-horned when the EventEmitter was added.
-  # tood: refactor
-  start: ()->
-    self = @
-    accelerometer = new MMA8452Q
+  # call read n times and average to get a stable zero point
+  init: (afterInit)->
     previousValue = [0, 0, 0, 0]
-
-    # call read n times and average to get a stable
-    # zero point
     nTimes = 30
     initPrevious = (times, afterInit)->
-      return afterInit() unless times
+      if !times
+        @initialFrame = new InitialFrame(previousValue)
+        afterInit.call @
+        return
 
       computeNext = (values)->
         [x, y, z, stamp] = values
         [pX, pY, pZ]     = previousValue
         previousValue    = [pX+x/nTimes, pY+y/nTimes, pZ+z/nTimes, stamp]
 
-      accelerometer.read (err, values)->
+      readResult = (err, values)->
         computeNext(values)
-        initPrevious(times - 1, afterInit)
+        initPrevious.call(@, times - 1, afterInit)
+      @accelerometer.read readResult.bind(@)
 
-    afterInit = ()->
-      initFrame = new InitialFrame(previousValue)
+    initPrevious.call(@, nTimes, afterInit)
 
-      step = (lastFrame)->
-        ()->
-          accelerometer.read (err, values)->
-            return console.log(err) if err
-            newFrame = new Frame(lastFrame, initFrame.tare(values))
-            self.emit "data", newFrame
-            setTimeout step(newFrame), self.speed
-      step(initFrame)()
+  run: ()->
+    step = (lastFrame)->
+      ()->
+        readResult = (err, values)->
+          return console.log(err) if err
+          newFrame = new Frame(lastFrame, @initialFrame.tare(values))
+          @emit "data", newFrame
+          setTimeout step(newFrame).bind(@), @speed
+        @accelerometer.read readResult.bind(@)
 
-    initPrevious(nTimes, afterInit)
+    step(@initialFrame).bind(@)()
+
+  start: ()->
+    @init(@run)
 
 module.exports = PositionTracker

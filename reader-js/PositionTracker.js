@@ -19,18 +19,20 @@
     function PositionTracker(speed) {
       this.speed = speed;
       this.speed || (this.speed = 50);
+      this.initialFrame = null;
+      this.accelerometer = new MMA8452Q;
     }
 
-    PositionTracker.prototype.start = function() {
-      var accelerometer, afterInit, initPrevious, nTimes, previousValue, self;
-      self = this;
-      accelerometer = new MMA8452Q;
+    PositionTracker.prototype.init = function(afterInit) {
+      var initPrevious, nTimes, previousValue;
       previousValue = [0, 0, 0, 0];
       nTimes = 30;
       initPrevious = function(times, afterInit) {
-        var computeNext;
+        var computeNext, readResult;
         if (!times) {
-          return afterInit();
+          this.initialFrame = new InitialFrame(previousValue);
+          afterInit.call(this);
+          return;
         }
         computeNext = function(values) {
           var pX, pY, pZ, stamp, x, y, z;
@@ -38,30 +40,37 @@
           pX = previousValue[0], pY = previousValue[1], pZ = previousValue[2];
           return previousValue = [pX + x / nTimes, pY + y / nTimes, pZ + z / nTimes, stamp];
         };
-        return accelerometer.read(function(err, values) {
+        readResult = function(err, values) {
           computeNext(values);
-          return initPrevious(times - 1, afterInit);
-        });
-      };
-      afterInit = function() {
-        var initFrame, step;
-        initFrame = new InitialFrame(previousValue);
-        step = function(lastFrame) {
-          return function() {
-            return accelerometer.read(function(err, values) {
-              var newFrame;
-              if (err) {
-                return console.log(err);
-              }
-              newFrame = new Frame(lastFrame, initFrame.tare(values));
-              self.emit("data", newFrame);
-              return setTimeout(step(newFrame), self.speed);
-            });
-          };
+          return initPrevious.call(this, times - 1, afterInit);
         };
-        return step(initFrame)();
+        return this.accelerometer.read(readResult.bind(this));
       };
-      return initPrevious(nTimes, afterInit);
+      return initPrevious.call(this, nTimes, afterInit);
+    };
+
+    PositionTracker.prototype.run = function() {
+      var step;
+      step = function(lastFrame) {
+        return function() {
+          var readResult;
+          readResult = function(err, values) {
+            var newFrame;
+            if (err) {
+              return console.log(err);
+            }
+            newFrame = new Frame(lastFrame, this.initialFrame.tare(values));
+            this.emit("data", newFrame);
+            return setTimeout(step(newFrame).bind(this), this.speed);
+          };
+          return this.accelerometer.read(readResult.bind(this));
+        };
+      };
+      return step(this.initialFrame)();
+    };
+
+    PositionTracker.prototype.start = function() {
+      return this.init(this.run);
     };
 
     return PositionTracker;
