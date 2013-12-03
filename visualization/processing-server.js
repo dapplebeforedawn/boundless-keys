@@ -14,7 +14,7 @@
 
   PositionTracker = require("../reader-js/PositionTracker");
 
-  positionTracker = new PositionTracker(100);
+  positionTracker = new PositionTracker(5);
 
   positionTracker.start();
 

@@ -24,6 +24,7 @@ class Frame
   calcEndVelocity = ->
     velocity = (coord)->
       @lastFrame.endVelocity[coord] + @accel[coord] * @timeDelta
+      # @accel[coord] * @timeDelta    # "easy mode", velocity isn't additive
     applyXYZ.call @, velocity
 
   # d_x(t) = v(0)*t + 1/2*a*t^2

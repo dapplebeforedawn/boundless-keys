@@ -8,15 +8,15 @@
 
   scalePosition = function(pos) {
     return applyXYZ(function(coord) {
-      return pos[coord] * 1000;
+      return pos[coord] * -500;
     });
   };
 
   translatePosition = function(pos, P) {
     var newPos;
     newPos = [0, 0, 0];
-    newPos[0] = pos[0] + P.width / 2;
-    newPos[1] = pos[1] + P.height / 2;
+    newPos[0] = pos[1] + P.width / 2;
+    newPos[1] = pos[0] + P.height / 2;
     return newPos;
   };
 
@@ -35,8 +35,8 @@
       P.fill(166, 244, 130);
       P.translate.apply(P, position);
       P.sphere(8);
-      document.getElementById("x-val").textContent = position[0];
-      document.getElementById("y-val").textContent = position[1];
+      document.getElementById("x-val").textContent = position[1];
+      document.getElementById("y-val").textContent = position[0];
       return document.getElementById("z-val").textContent = position[2];
     };
   };

@@ -4,13 +4,18 @@ applyXYZ = (fcn)->
 # each pixel is 1mm
 scalePosition = (pos)->
   applyXYZ (coord)->
-    pos[coord] * 1000
+    # pos[coord] * 1000
+    pos[coord] * -1000
 
 # allow for 0,0 being the screen center
 translatePosition = (pos, P)->
   newPos    = [ 0, 0, 0 ]  # ignore z for now
-  newPos[0] = pos[0] + P.width/2
-  newPos[1] = pos[1] + P.height/2
+  # newPos[0] = pos[0] + P.width/2
+  # newPos[1] = pos[1] + P.height/2
+
+  # flip x, y for convenience
+  newPos[0] = pos[1] + P.width/2
+  newPos[1] = pos[0] + P.height/2
   newPos
 
 sketchProc = (P) ->
@@ -31,8 +36,9 @@ sketchProc = (P) ->
     P.translate(position...)
     P.sphere(8)
 
-    document.getElementById("x-val").textContent = position[0]
-    document.getElementById("y-val").textContent = position[1]
+    #flip x and y for conveience
+    document.getElementById("x-val").textContent = position[1]
+    document.getElementById("y-val").textContent = position[0]
     document.getElementById("z-val").textContent = position[2]
 
 # attaching the sketchProc function to the canvas
