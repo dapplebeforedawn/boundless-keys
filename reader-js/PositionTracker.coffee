@@ -8,6 +8,7 @@ class PositionTracker extends EventEmitter
     @speed       or= 50
     @initialFrame  = null
     @accelerometer = new MMA8452Q
+    @running       = false
 
   # call read n times and average to get a stable zero point
   init: (afterInit)->
@@ -38,12 +39,21 @@ class PositionTracker extends EventEmitter
           return console.log(err) if err
           newFrame = new Frame(lastFrame, @initialFrame.tare(values))
           @emit "data", newFrame
-          setTimeout step(newFrame).bind(@), @speed
+          if @running
+            setTimeout step(newFrame).bind(@), @speed
         @accelerometer.read readResult.bind(@)
 
     step(@initialFrame).bind(@)()
 
   start: ()->
+    @running = true
     @init(@run)
+
+  stop: ()->
+    @running = false
+
+  restart: ()->
+    @stop()
+    @start()
 
 module.exports = PositionTracker

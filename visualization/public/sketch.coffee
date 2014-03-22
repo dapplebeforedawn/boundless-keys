@@ -5,7 +5,7 @@ applyXYZ = (fcn)->
 scalePosition = (pos)->
   applyXYZ (coord)->
     # pos[coord] * 1000
-    pos[coord] * -1000
+    pos[coord] * -100
 
 # allow for 0,0 being the screen center
 translatePosition = (pos, P)->

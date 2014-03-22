@@ -8,7 +8,7 @@
 
   scalePosition = function(pos) {
     return applyXYZ(function(coord) {
-      return pos[coord] * -500;
+      return pos[coord] * -100;
     });
   };
 
