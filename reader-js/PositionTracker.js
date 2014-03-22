@@ -21,6 +21,7 @@
       this.speed || (this.speed = 50);
       this.initialFrame = null;
       this.accelerometer = new MMA8452Q;
+      this.running = false;
     }
 
     PositionTracker.prototype.init = function(afterInit) {
@@ -56,12 +57,11 @@
           var readResult;
           readResult = function(err, values) {
             var newFrame;
-            if (err) {
-              return console.log(err);
-            }
             newFrame = new Frame(lastFrame, this.initialFrame.tare(values));
             this.emit("data", newFrame);
-            return setTimeout(step(newFrame).bind(this), this.speed);
+            if (this.running) {
+              return setTimeout(step(newFrame).bind(this), this.speed);
+            }
           };
           return this.accelerometer.read(readResult.bind(this));
         };
@@ -70,7 +70,17 @@
     };
 
     PositionTracker.prototype.start = function() {
+      this.running = true;
       return this.init(this.run);
+    };
+
+    PositionTracker.prototype.stop = function() {
+      return this.running = false;
+    };
+
+    PositionTracker.prototype.restart = function() {
+      this.stop();
+      return this.start();
     };
 
     return PositionTracker;

@@ -128,7 +128,7 @@ sudo make install
 gcc -o bin/i2c-clang-example i2c-clang-example.c -l bcm2835
 
 #run it
-bin/i2c-clang-example -dp -s29 -r13 1  # read the WHOAMI register
+sudo bin/i2c-clang-example -dp -s29 -r13 1  # read the WHOAMI register
 
 # Running ...
 # Clock divider set to: 148
@@ -157,11 +157,21 @@ sudo ./bin/i2c-clang-example -dw -s29 2 0x2A 0x01
 cd reader-js
 coffee -c *.coffee ; node simple-logger
 
-# [  -0.05862237420615535 ,  0.04592085979482169 ,  0.9770395701025891  ] -  0.9798732722490773
-# [  -0.061553492916463115 ,  0.0537371763556424 ,  0.9789936492427943  ] -  0.9823976190273559
-# [  -0.05959941377625794 ,  0.04787493893502687 ,  0.970200293111871  ] -  0.9732074335180894
-# [  -0.0625305324865657 ,  0.051783097215437224 ,  0.981924767953102  ] -  0.9852754978025334
+# [ -0.05862237420615535  , 0.04592085979482169  , 0.9770395701025891 ] -  0.9798732722490773
+# [ -0.061553492916463115 , 0.0537371763556424   , 0.9789936492427943 ] -  0.9823976190273559
+# [ -0.05959941377625794  , 0.04787493893502687  , 0.970200293111871  ] -  0.9732074335180894
+# [ -0.0625305324865657   , 0.051783097215437224 , 0.981924767953102  ] -  0.9852754978025334
 
 # x, y, z and the pythagorean distance.
 ```
 The included `simple-logger.coffee` file reads the accelerometer data into a buffer of bytes.  The MMA8452Q uses 12 bit values for acceleration, but node works in byte sized units (har, har ;-).  Since the accelerometer puts the always-zero four bits in the right most word of the LSB, if we read the two bytes as a 16 bit number it will be 10 times too large.  To account for this `simple-logger.coffee` shifts the 16 bit buffer by 4 bits, dropping the zeros off the LSB side and pushing them on to the MSB side.  Javascript's `>>` bitwise operator respects the sign bit.
+
+## Visualization
+Under `visualization` there is a simple webservice to view the computed position in real time.  Just start the server with:
+
+```bash
+cd visualization
+node processing-server
+```
+
+then open a web browser to: `http://the-ip-of-your-raspberry-pi:3000`

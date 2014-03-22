@@ -36,7 +36,7 @@ class PositionTracker extends EventEmitter
     step = (lastFrame)->
       ()->
         readResult = (err, values)->
-          return console.log(err) if err
+          # return console.log(err) if err
           newFrame = new Frame(lastFrame, @initialFrame.tare(values))
           @emit "data", newFrame
           if @running
